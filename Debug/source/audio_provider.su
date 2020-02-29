@@ -1,0 +1,11 @@
+fsl_clock.h:708:20:void CLOCK_SetMux(clock_mux_t, uint32_t)	24	static
+fsl_clock.h:745:20:void CLOCK_SetDiv(clock_div_t, uint32_t)	24	static
+fsl_dmamux.h:75:20:void DMAMUX_EnableChannel(DMAMUX_Type*, uint32_t)	16	static
+fsl_dmamux.h:105:20:void DMAMUX_SetSource(DMAMUX_Type*, uint32_t, uint32_t)	24	static
+audio_provider.cc:137:6:void {anonymous}::BOARD_EnableSaiMclkOutput(bool)	16	static
+audio_provider.cc:150:6:void {anonymous}::CaptureSamples(const int16_t*)	40	static
+audio_provider.cc:167:13:void {anonymous}::rx_callback(I2S_Type*, sai_edma_handle_t*, status_t, void*)	32	static
+audio_provider.cc:202:13:void {anonymous}::tx_callback(I2S_Type*, sai_edma_handle_t*, status_t, void*)	24	static
+audio_provider.cc:213:14:TfLiteStatus InitAudioRecording()	56	static
+audio_provider.cc:309:14:TfLiteStatus GetAudioSamples(tflite::ErrorReporter*, int, int, int*, int16_t**)	48	static
+audio_provider.cc:340:9:int32_t LatestAudioTimestamp()	4	static

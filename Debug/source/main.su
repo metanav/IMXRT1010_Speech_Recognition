@@ -1,0 +1,31 @@
+error_reporter.h:37:11:tflite::ErrorReporter::~ErrorReporter()	16	static
+error_reporter.h:37:11:virtual tflite::ErrorReporter::~ErrorReporter()	16	static
+micro_error_reporter.h:26:3:tflite::MicroErrorReporter::~MicroErrorReporter()	16	static
+micro_error_reporter.h:26:3:virtual tflite::MicroErrorReporter::~MicroErrorReporter()	16	static
+gthr-default.h:229:1:int __gthread_key_delete(__gthread_key_t)	16	static
+flatbuffers.h:51:13:void flatbuffers::EndianCheck()	16	static
+flatbuffers.h:2251:18:const uint8_t* flatbuffers::Table::GetVTable() const	24	static
+flatbuffers.h:2257:13:flatbuffers::voffset_t flatbuffers::Table::GetOptionalFieldOffset(flatbuffers::voffset_t) const	24	static
+schema_generated.h:10370:12:uint32_t tflite::Model::version() const	16	static
+schema_generated.h:15939:29:const tflite::Model* tflite::GetModel(const void*)	16	static
+op_resolver.h:35:11:tflite::OpResolver::~OpResolver()	16	static
+op_resolver.h:35:11:virtual tflite::OpResolver::~OpResolver()	16	static
+op_resolver.h:27:7:constexpr tflite::OpResolver::OpResolver()	16	static
+micro_mutable_op_resolver.h:33:7:tflite::MicroOpResolver<3>::MicroOpResolver()	16	static
+main.cc:33:6:void setup()	32	static
+main.cc:106:6:void loop()	48	static
+main.cc:156:5:int main()	16	static
+base.h:344:24:T flatbuffers::EndianScalar(T) [with T = long unsigned int]	16	static
+base.h:355:3:T flatbuffers::ReadScalar(const void*) [with T = short unsigned int]	16	static
+base.h:355:3:T flatbuffers::ReadScalar(const void*) [with T = long unsigned int]	16	static
+base.h:355:3:T flatbuffers::ReadScalar(const void*) [with T = long int]	16	static
+flatbuffers.h:2267:26:T flatbuffers::Table::GetField(flatbuffers::voffset_t, T) const [with T = long unsigned int]	32	static
+flatbuffers.h:1930:31:const T* flatbuffers::GetRoot(const void*) [with T = tflite::Model]	16	static
+micro_mutable_op_resolver.h:59:8:void tflite::MicroOpResolver<tOpCount>::AddBuiltin(tflite::BuiltinOperator, TfLiteRegistration*, int, int) [with unsigned int tOpCount = 3]	40	static
+base.h:344:24:T flatbuffers::EndianScalar(T) [with T = long int]	16	static
+base.h:344:24:T flatbuffers::EndianScalar(T) [with T = short unsigned int]	16	static
+flatbuffers.h:1923:25:T* flatbuffers::GetMutableRoot(void*) [with T = tflite::Model]	16	static
+micro_mutable_op_resolver.h:33:7:tflite::MicroOpResolver<3>::~MicroOpResolver()	16	static
+micro_mutable_op_resolver.h:33:7:virtual tflite::MicroOpResolver<3>::~MicroOpResolver()	16	static
+micro_mutable_op_resolver.h:35:29:const TfLiteRegistration* tflite::MicroOpResolver<tOpCount>::FindOp(tflite::BuiltinOperator, int) const [with unsigned int tOpCount = 3]	32	static
+micro_mutable_op_resolver.h:47:29:const TfLiteRegistration* tflite::MicroOpResolver<tOpCount>::FindOp(const char*, int) const [with unsigned int tOpCount = 3]	32	static

@@ -1,0 +1,23 @@
+#include "audio_provider.h"
+#include "tensorflow/lite/micro/micro_error_reporter.h"
+#include "tensorflow/lite/micro/micro_interpreter.h"
+#include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
+#include "tensorflow/lite/schema/schema_generated.h"
+#include "tensorflow/lite/version.h"
+
+//namespace {
+//	tflite::ErrorReporter* error_reporter = nullptr;
+//	static tflite::MicroErrorReporter micro_error_reporter;
+//	error_reporter = &micro_error_reporter;
+//}
+
+int main(void) {
+
+	tflite::ErrorReporter* error_reporter = nullptr;
+    int audio_samples_size = 0;
+    int16_t* audio_samples = nullptr;
+
+    GetAudioSamples(error_reporter, 30, 10, &audio_samples_size, &audio_samples);
+
+    return 0;
+}

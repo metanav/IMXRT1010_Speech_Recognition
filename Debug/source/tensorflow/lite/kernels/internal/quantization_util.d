@@ -1,0 +1,18 @@
+source/tensorflow/lite/kernels/internal/quantization_util.o \
+ source/tensorflow/lite/kernels/internal/quantization_util.d: \
+ ../source/tensorflow/lite/kernels/internal/quantization_util.cc \
+ /Users/naveen/Documents/MCUXpressoIDE_11.1.0/workspace/IMXRT1010_Speech_Recognition/source/tensorflow/lite/kernels/internal/compatibility.h \
+ /Users/naveen/Documents/MCUXpressoIDE_11.1.0/workspace/IMXRT1010_Speech_Recognition/source/tensorflow/lite/kernels/op_macros.h \
+ /Users/naveen/Documents/MCUXpressoIDE_11.1.0/workspace/IMXRT1010_Speech_Recognition/source/tensorflow/lite/kernels/internal/quantization_util.h \
+ /Users/naveen/Documents/MCUXpressoIDE_11.1.0/workspace/IMXRT1010_Speech_Recognition/source/tensorflow/lite/kernels/internal/round.h \
+ /Users/naveen/Documents/MCUXpressoIDE_11.1.0/workspace/IMXRT1010_Speech_Recognition/source/tensorflow/lite/kernels/internal/types.h
+
+/Users/naveen/Documents/MCUXpressoIDE_11.1.0/workspace/IMXRT1010_Speech_Recognition/source/tensorflow/lite/kernels/internal/compatibility.h:
+
+/Users/naveen/Documents/MCUXpressoIDE_11.1.0/workspace/IMXRT1010_Speech_Recognition/source/tensorflow/lite/kernels/op_macros.h:
+
+/Users/naveen/Documents/MCUXpressoIDE_11.1.0/workspace/IMXRT1010_Speech_Recognition/source/tensorflow/lite/kernels/internal/quantization_util.h:
+
+/Users/naveen/Documents/MCUXpressoIDE_11.1.0/workspace/IMXRT1010_Speech_Recognition/source/tensorflow/lite/kernels/internal/round.h:
+
+/Users/naveen/Documents/MCUXpressoIDE_11.1.0/workspace/IMXRT1010_Speech_Recognition/source/tensorflow/lite/kernels/internal/types.h:

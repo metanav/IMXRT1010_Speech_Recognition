@@ -1,0 +1,13 @@
+micro_string.cc:40:7:char* {anonymous}::ReverseStringInPlace(char*, char*)	32	static
+micro_string.cc:53:7:char* {anonymous}::StrCatStr(char*, int, const char*)	32	static
+micro_string.cc:69:7:char* {anonymous}::FastUInt32ToBufferLeft(uint32_t, char*, int)	40	static
+micro_string.cc:88:7:char* {anonymous}::FastInt32ToBufferLeft(int32_t, char*)	24	static
+micro_string.cc:98:7:char* {anonymous}::StrCatInt32(char*, int, int32_t)	72	static
+micro_string.cc:105:7:char* {anonymous}::StrCatUInt32(char*, int, uint32_t, int)	72	static
+micro_string.cc:115:7:char* {anonymous}::FastFloatToBufferLeft(float, char*)	96	static
+micro_string.cc:169:5:int {anonymous}::FormatInt32(char*, int32_t)	16	static
+micro_string.cc:173:5:int {anonymous}::FormatUInt32(char*, uint32_t)	16	static
+micro_string.cc:177:5:int {anonymous}::FormatHex(char*, uint32_t)	16	static
+micro_string.cc:181:5:int {anonymous}::FormatFloat(char*, float)	16	static
+micro_string.cc:187:16:int MicroVsnprintf(char*, int, const char*, va_list)	56	static
+micro_string.cc:256:16:)	24	static

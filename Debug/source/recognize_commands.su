@@ -1,0 +1,14 @@
+recognize_commands.h:33:3:PreviousResultsQueue::PreviousResultsQueue(tflite::ErrorReporter*)	24	static
+recognize_commands.h:39:5:PreviousResultsQueue::Result::Result()	16	static
+recognize_commands.h:40:5:PreviousResultsQueue::Result::Result(int32_t, uint8_t*)	32	static
+recognize_commands.h:49:7:int PreviousResultsQueue::size()	16	static
+recognize_commands.h:50:8:bool PreviousResultsQueue::empty()	16	static
+recognize_commands.h:51:11:PreviousResultsQueue::Result& PreviousResultsQueue::front()	16	static
+recognize_commands.h:52:11:PreviousResultsQueue::Result& PreviousResultsQueue::back()	24	static
+recognize_commands.h:60:8:void PreviousResultsQueue::push_back(const PreviousResultsQueue::Result&)	16	static
+recognize_commands.h:71:10:PreviousResultsQueue::Result PreviousResultsQueue::pop_front()	24	static
+recognize_commands.h:89:11:PreviousResultsQueue::Result& PreviousResultsQueue::from_front(int)	24	static
+limits:1138:7:static constexpr long int std::numeric_limits<long int>::min()	4	static
+limits:1141:7:static constexpr long int std::numeric_limits<long int>::max()	4	static
+recognize_commands.cc:20:1:RecognizeCommands::RecognizeCommands(tflite::ErrorReporter*, int32_t, uint8_t, int32_t, int32_t)	24	static
+recognize_commands.cc:35:14:TfLiteStatus RecognizeCommands::ProcessLatestResults(const TfLiteTensor*, int32_t, const char**, uint8_t*, bool*)	160	static

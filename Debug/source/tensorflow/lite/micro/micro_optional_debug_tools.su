@@ -1,0 +1,94 @@
+new:168:14:void* operator new(std::size_t, void*)	16	static
+gthr-default.h:229:1:int __gthread_key_delete(__gthread_key_t)	16	static
+flatbuffers.h:2251:18:const uint8_t* flatbuffers::Table::GetVTable() const	24	static
+flatbuffers.h:2257:13:flatbuffers::voffset_t flatbuffers::Table::GetOptionalFieldOffset(flatbuffers::voffset_t) const	24	static
+schema_generated.h:910:28:const char* const* tflite::EnumNamesBuiltinOperator()	4	static
+schema_generated.h:10102:39:const flatbuffers::Vector<long int>* tflite::SubGraph::inputs() const	16	static
+schema_generated.h:10105:39:const flatbuffers::Vector<long int>* tflite::SubGraph::outputs() const	16	static
+micro_interpreter.h:53:10:size_t tflite::MicroInterpreter::tensors_size() const	16	static
+micro_interpreter.h:67:39:const flatbuffers::Vector<long int>& tflite::MicroInterpreter::inputs() const	16	static
+micro_interpreter.h:83:39:const flatbuffers::Vector<long int>& tflite::MicroInterpreter::outputs() const	16	static
+micro_interpreter.h:104:10:size_t tflite::MicroInterpreter::operators_size() const	16	static
+micro_interpreter.h:107:29:const tflite::NodeAndRegistration tflite::MicroInterpreter::node_and_registration(int) const	32	static
+micro_optional_debug_tools.cc:28:18:std::vector<int> tflite::{anonymous}::flatbuffersVector2StdVector(const flatbuffers::Vector<long int>&)	24	static
+micro_optional_debug_tools.cc:38:6:void tflite::{anonymous}::PrintIntVector(const std::vector<int>&)	32	static
+micro_optional_debug_tools.cc:45:6:void tflite::{anonymous}::PrintTfLiteIntVector(const TfLiteIntArray*)	24	static
+micro_optional_debug_tools.cc:56:13:const char* tflite::{anonymous}::TensorTypeName(TfLiteType)	16	static
+micro_optional_debug_tools.cc:84:13:const char* tflite::{anonymous}::AllocTypeName(TfLiteAllocationType)	16	static
+micro_optional_debug_tools.cc:102:6:void tflite::PrintInterpreterState(tflite::MicroInterpreter*)	136	static
+base.h:344:24:T flatbuffers::EndianScalar(T) [with T = long unsigned int]	16	static
+stl_algobase.h:219:5:const _Tp& std::max(const _Tp&, const _Tp&) [with _Tp = unsigned int]	16	static
+base.h:355:3:T flatbuffers::ReadScalar(const void*) [with T = short unsigned int]	16	static
+base.h:355:3:T flatbuffers::ReadScalar(const void*) [with T = long unsigned int]	16	static
+base.h:355:3:T flatbuffers::ReadScalar(const void*) [with T = long int]	16	static
+flatbuffers.h:2278:26:P flatbuffers::Table::GetPointer(flatbuffers::voffset_t) const [with P = const flatbuffers::Vector<long int>*]	16	static
+flatbuffers.h:227:13:flatbuffers::uoffset_t flatbuffers::Vector<T>::size() const [with T = long int]	16	static
+flatbuffers.h:236:15:flatbuffers::Vector<T>::return_type flatbuffers::Vector<T>::Get(flatbuffers::uoffset_t) const [with T = long int]	16	static
+flatbuffers.h:227:13:flatbuffers::uoffset_t flatbuffers::Vector<T>::size() const [with T = flatbuffers::Offset<tflite::Operator>]	16	static
+stl_vector.h:391:7:std::vector<_Tp, _Alloc>::vector() [with _Tp = int; _Alloc = std::allocator<int>]	16	static
+stl_vector.h:565:7:std::vector<_Tp, _Alloc>::~vector() [with _Tp = int; _Alloc = std::allocator<int>]	24	static
+vector.tcc:66:5:void std::vector<_Tp, _Alloc>::reserve(std::vector<_Tp, _Alloc>::size_type) [with _Tp = int; _Alloc = std::allocator<int>]	32	static
+move.h:99:5:constexpr typename std::remove_reference<_Tp>::type&& std::move(_Tp&&) [with _Tp = int&]	16	static
+stl_vector.h:1090:7:void std::vector<_Tp, _Alloc>::push_back(std::vector<_Tp, _Alloc>::value_type&&) [with _Tp = int; _Alloc = std::allocator<int>]	16	static
+stl_vector.h:707:7:std::vector<_Tp, _Alloc>::const_iterator std::vector<_Tp, _Alloc>::begin() const [with _Tp = int; _Alloc = std::allocator<int>]	24	static
+stl_vector.h:725:7:std::vector<_Tp, _Alloc>::const_iterator std::vector<_Tp, _Alloc>::end() const [with _Tp = int; _Alloc = std::allocator<int>]	24	static
+stl_iterator.h:884:5:bool __gnu_cxx::operator!=(const __gnu_cxx::__normal_iterator<_Iterator, _Container>&, const __gnu_cxx::__normal_iterator<_Iterator, _Container>&) [with _Iterator = const int*; _Container = std::vector<int>]	24	static
+stl_iterator.h:804:7:__gnu_cxx::__normal_iterator<_Iterator, _Container>& __gnu_cxx::__normal_iterator<_Iterator, _Container>::operator++() [with _Iterator = const int*; _Container = std::vector<int>]	16	static
+stl_iterator.h:796:7:__gnu_cxx::__normal_iterator<_Iterator, _Container>::reference __gnu_cxx::__normal_iterator<_Iterator, _Container>::operator*() const [with _Iterator = const int*; _Container = std::vector<int>]	16	static
+base.h:344:24:T flatbuffers::EndianScalar(T) [with T = long int]	16	static
+base.h:344:24:T flatbuffers::EndianScalar(T) [with T = short unsigned int]	16	static
+flatbuffers.h:2272:26:P flatbuffers::Table::GetPointer(flatbuffers::voffset_t) [with P = const flatbuffers::Vector<long int>*]	24	static
+flatbuffers.h:85:22:static flatbuffers::IndirectHelper<T>::return_type flatbuffers::IndirectHelper<T>::Read(const uint8_t*, flatbuffers::uoffset_t) [with T = long int]	16	static
+flatbuffers.h:310:18:const uint8_t* flatbuffers::Vector<T>::Data() const [with T = long int]	16	static
+stl_vector.h:88:14:std::_Vector_base<int, std::allocator<int> >::_Vector_impl::~_Vector_impl()	16	static
+stl_vector.h:248:7:std::_Vector_base<_Tp, _Alloc>::_Vector_base() [with _Tp = int; _Alloc = std::allocator<int>]	16	static
+stl_vector.h:283:7:std::_Vector_base<_Tp, _Alloc>::~_Vector_base() [with _Tp = int; _Alloc = std::allocator<int>]	16	static
+stl_vector.h:237:7:std::_Vector_base<_Tp, _Alloc>::_Tp_alloc_type& std::_Vector_base<_Tp, _Alloc>::_M_get_Tp_allocator() [with _Tp = int; _Alloc = std::allocator<int>]	16	static
+stl_construct.h:203:5:void std::_Destroy(_ForwardIterator, _ForwardIterator, std::allocator<_T2>&) [with _ForwardIterator = int*; _Tp = int]	24	static
+stl_vector.h:810:7:std::vector<_Tp, _Alloc>::size_type std::vector<_Tp, _Alloc>::max_size() const [with _Tp = int; _Alloc = std::allocator<int>]	16	static
+stl_vector.h:885:7:std::vector<_Tp, _Alloc>::size_type std::vector<_Tp, _Alloc>::capacity() const [with _Tp = int; _Alloc = std::allocator<int>]	16	static
+stl_vector.h:805:7:std::vector<_Tp, _Alloc>::size_type std::vector<_Tp, _Alloc>::size() const [with _Tp = int; _Alloc = std::allocator<int>]	16	static
+stl_iterator.h:1218:5:_ReturnType std::__make_move_if_noexcept_iterator(_Tp*) [with _Tp = int; _ReturnType = std::move_iterator<int*>]	24	static
+stl_vector.h:1395:2:std::vector<_Tp, _Alloc>::pointer std::vector<_Tp, _Alloc>::_M_allocate_and_copy(std::vector<_Tp, _Alloc>::size_type, _ForwardIterator, _ForwardIterator) [with _ForwardIterator = std::move_iterator<int*>; _Tp = int; _Alloc = std::allocator<int>]	32	static
+stl_vector.h:300:7:void std::_Vector_base<_Tp, _Alloc>::_M_deallocate(std::_Vector_base<_Tp, _Alloc>::pointer, std::size_t) [with _Tp = int; _Alloc = std::allocator<int>]	24	static
+move.h:74:5:constexpr _Tp&& std::forward(typename std::remove_reference<_Tp>::type&) [with _Tp = int]	16	static
+vector.tcc:97:7:) [with _Args = {int}; _Tp = int; _Alloc = std::allocator<int>]	24	static
+stl_iterator.h:783:7:__gnu_cxx::__normal_iterator<_Iterator, _Container>::__normal_iterator(const _Iterator&) [with _Iterator = const int*; _Container = std::vector<int>]	16	static
+stl_iterator.h:848:7:const _Iterator& __gnu_cxx::__normal_iterator<_Iterator, _Container>::base() const [with _Iterator = const int*; _Container = std::vector<int>]	16	static
+stl_vector.h:95:2:std::_Vector_base<_Tp, _Alloc>::_Vector_impl::_Vector_impl() [with _Tp = int; _Alloc = std::allocator<int>]	16	static
+allocator.h:139:7:std::allocator< <template-parameter-1-1> >::~allocator() [with _Tp = int]	16	static
+stl_construct.h:127:5:void std::_Destroy(_ForwardIterator, _ForwardIterator) [with _ForwardIterator = int*]	16	static
+alloc_traits.h:495:7:static std::allocator_traits<std::allocator<_CharT> >::size_type std::allocator_traits<std::allocator<_CharT> >::max_size(const allocator_type&) [with _Tp = int]	16	static
+stl_vector.h:241:7:const _Tp_alloc_type& std::_Vector_base<_Tp, _Alloc>::_M_get_Tp_allocator() const [with _Tp = int; _Alloc = std::allocator<int>]	16	static
+stl_iterator.h:1033:7:std::move_iterator<_Iterator>::move_iterator(std::move_iterator<_Iterator>::iterator_type) [with _Iterator = int*]	16	static
+stl_vector.h:293:7:std::_Vector_base<_Tp, _Alloc>::pointer std::_Vector_base<_Tp, _Alloc>::_M_allocate(std::size_t) [with _Tp = int; _Alloc = std::allocator<int>]	16	static
+stl_uninitialized.h:287:5:_ForwardIterator std::__uninitialized_copy_a(_InputIterator, _InputIterator, _ForwardIterator, std::allocator<_Tp>&) [with _InputIterator = std::move_iterator<int*>; _ForwardIterator = int*; _Tp = int]	24	static
+alloc_traits.h:461:7:static void std::allocator_traits<std::allocator<_CharT> >::deallocate(std::allocator_traits<std::allocator<_CharT> >::allocator_type&, std::allocator_traits<std::allocator<_CharT> >::pointer, std::allocator_traits<std::allocator<_CharT> >::size_type) [with _Tp = int]	24	static
+alloc_traits.h:474:2:) [with _Up = int; _Args = {int}; _Tp = int]	24	static
+stl_vector.h:716:7:std::vector<_Tp, _Alloc>::iterator std::vector<_Tp, _Alloc>::end() [with _Tp = int; _Alloc = std::allocator<int>]	24	static
+vector.tcc:413:7:) [with _Args = {int}; _Tp = int; _Alloc = std::allocator<int>]	64	static
+allocator.h:131:7:std::allocator< <template-parameter-1-1> >::allocator() [with _Tp = int]	16	static
+new_allocator.h:86:7:__gnu_cxx::new_allocator<_Tp>::~new_allocator() [with _Tp = int]	16	static
+stl_construct.h:117:9:static void std::_Destroy_aux<true>::__destroy(_ForwardIterator, _ForwardIterator) [with _ForwardIterator = int*]	16	static
+new_allocator.h:129:7:__gnu_cxx::new_allocator<_Tp>::size_type __gnu_cxx::new_allocator<_Tp>::max_size() const [with _Tp = int]	16	static
+alloc_traits.h:435:7:static _Tp* std::allocator_traits<std::allocator<_CharT> >::allocate(std::allocator_traits<std::allocator<_CharT> >::allocator_type&, std::allocator_traits<std::allocator<_CharT> >::size_type) [with _Tp = int]	16	static
+stl_uninitialized.h:115:5:_ForwardIterator std::uninitialized_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = std::move_iterator<int*>; _ForwardIterator = int*]	32	static
+new_allocator.h:116:7:void __gnu_cxx::new_allocator<_Tp>::deallocate(__gnu_cxx::new_allocator<_Tp>::pointer, __gnu_cxx::new_allocator<_Tp>::size_type) [with _Tp = int]	24	static
+new_allocator.h:135:2:) [with _Up = int; _Args = {int}; _Tp = int]	32	static
+stl_iterator.h:783:7:__gnu_cxx::__normal_iterator<_Iterator, _Container>::__normal_iterator(const _Iterator&) [with _Iterator = int*; _Container = std::vector<int>]	16	static
+stl_vector.h:1640:7:std::vector<_Tp, _Alloc>::size_type std::vector<_Tp, _Alloc>::_M_check_len(std::vector<_Tp, _Alloc>::size_type, const char*) const [with _Tp = int; _Alloc = std::allocator<int>]	40	static
+stl_vector.h:698:7:std::vector<_Tp, _Alloc>::iterator std::vector<_Tp, _Alloc>::begin() [with _Tp = int; _Alloc = std::allocator<int>]	24	static
+stl_iterator.h:966:5:typename __gnu_cxx::__normal_iterator<_Iterator, _Container>::difference_type __gnu_cxx::operator-(const __gnu_cxx::__normal_iterator<_Iterator, _Container>&, const __gnu_cxx::__normal_iterator<_Iterator, _Container>&) [with _Iterator = int*; _Container = std::vector<int>]	24	static
+stl_iterator.h:848:7:const _Iterator& __gnu_cxx::__normal_iterator<_Iterator, _Container>::base() const [with _Iterator = int*; _Container = std::vector<int>]	16	static
+stl_uninitialized.h:305:5:_ForwardIterator std::__uninitialized_move_if_noexcept_a(_InputIterator, _InputIterator, _ForwardIterator, _Allocator&) [with _InputIterator = int*; _ForwardIterator = int*; _Allocator = std::allocator<int>]	32	static
+new_allocator.h:79:7:__gnu_cxx::new_allocator<_Tp>::new_allocator() [with _Tp = int]	16	static
+new_allocator.h:99:7:_Tp* __gnu_cxx::new_allocator<_Tp>::allocate(__gnu_cxx::new_allocator<_Tp>::size_type, const void*) [with _Tp = int]	24	static
+stl_uninitialized.h:99:9:static _ForwardIterator std::__uninitialized_copy<true>::__uninit_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = std::move_iterator<int*>; _ForwardIterator = int*]	24	static
+stl_algobase.h:446:5:_OI std::copy(_II, _II, _OI) [with _II = std::move_iterator<int*>; _OI = int*]	32	static
+stl_iterator.h:1238:5:base())) std::__miter_base(std::move_iterator<_IteratorL>) [with _Iterator = int*]	16	static
+stl_algobase.h:420:5:_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = true; _II = int*; _OI = int*]	32	static
+stl_iterator.h:1042:7:std::move_iterator<_Iterator>::iterator_type std::move_iterator<_Iterator>::base() const [with _Iterator = int*]	16	static
+cpp_type_traits.h:419:5:_Iterator std::__miter_base(_Iterator) [with _Iterator = int*]	16	static
+stl_algobase.h:277:5:_Iterator std::__niter_base(_Iterator) [with _Iterator = int*]	16	static
+stl_algobase.h:375:5:_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = true; _II = int*; _OI = int*]	32	static
+stl_algobase.h:357:2:static _Tp* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(const _Tp*, const _Tp*, _Tp*) [with _Tp = int; bool _IsMove = true]	32	static

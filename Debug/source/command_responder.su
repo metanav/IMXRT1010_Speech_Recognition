@@ -1,0 +1,1 @@
+command_responder.cc:25:6:void RespondToCommand(tflite::ErrorReporter*, int32_t, const char*, uint8_t, bool)	32	static

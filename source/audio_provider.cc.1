@@ -1,0 +1,528 @@
+#include "micro_features/micro_model_settings.h"
+#include "audio_provider.h"
+
+#include <stdio.h>
+#include "board.h"
+#include "fsl_debug_console.h"
+#include "fsl_dmamux.h"
+#include "fsl_sai_edma.h"
+#include "fsl_codec_common.h"
+
+#include "fsl_wm8960.h"
+#include "pin_mux.h"
+#include "clock_config.h"
+#include "fsl_codec_adapter.h"
+
+#include "peripherals.h"
+#include "MIMXRT1011.h"
+/*******************************************************************************
+ * Definitions
+ ******************************************************************************/
+/* SAI instance and clock */
+#define DEMO_CODEC_WM8960
+#define DEMO_SAI SAI1
+#define DEMO_SAI_CHANNEL (0)
+#define DEMO_SAI_BITWIDTH (kSAI_WordWidth16bits)
+#define DEMO_SAI_IRQ SAI1_IRQn
+#define SAI_TxIRQHandler SAI1_IRQHandler
+
+/* IRQ */
+#define DEMO_SAI_TX_IRQ SAI1_IRQn
+#define DEMO_SAI_RX_IRQ SAI1_IRQn
+
+/* DMA */
+#define EXAMPLE_DMA DMA0
+#define EXAMPLE_DMAMUX DMAMUX
+#define EXAMPLE_TX_CHANNEL (0U)
+#define EXAMPLE_RX_CHANNEL (1U)
+#define EXAMPLE_SAI_TX_SOURCE kDmaRequestMuxSai1Tx
+#define EXAMPLE_SAI_RX_SOURCE kDmaRequestMuxSai1Rx
+
+/* Select Audio/Video PLL (786.48 MHz) as sai1 clock source */
+#define DEMO_SAI1_CLOCK_SOURCE_SELECT (2U)
+/* Clock pre divider for sai1 clock source */
+#define DEMO_SAI1_CLOCK_SOURCE_PRE_DIVIDER (0U)
+/* Clock divider for sai1 clock source */
+#define DEMO_SAI1_CLOCK_SOURCE_DIVIDER (63U)
+/* Get frequency of sai1 clock */
+#define DEMO_SAI_CLK_FREQ                                                        \
+    (CLOCK_GetFreq(kCLOCK_AudioPllClk) / (DEMO_SAI1_CLOCK_SOURCE_DIVIDER + 1U) / \
+     (DEMO_SAI1_CLOCK_SOURCE_PRE_DIVIDER + 1U))
+
+/* I2C instance and clock */
+#define DEMO_I2C LPI2C1
+
+/* Select USB1 PLL (480 MHz) as master lpi2c clock source */
+#define DEMO_LPI2C_CLOCK_SOURCE_SELECT (0U)
+/* Clock divider for master lpi2c clock source */
+#define DEMO_LPI2C_CLOCK_SOURCE_DIVIDER (5U)
+/* Get frequency of lpi2c clock */
+#define DEMO_I2C_CLK_FREQ ((CLOCK_GetFreq(kCLOCK_Usb1PllClk) / 8) / (DEMO_LPI2C_CLOCK_SOURCE_DIVIDER + 1U))
+
+#define OVER_SAMPLE_RATE (384U)
+#define BUFFER_SIZE (1024U)
+#define BUFFER_NUMBER (4U)
+/* demo audio sample rate */
+#define DEMO_AUDIO_SAMPLE_RATE (kSAI_SampleRate16KHz)
+/* demo audio master clock */
+#if (defined FSL_FEATURE_SAI_HAS_MCLKDIV_REGISTER && FSL_FEATURE_SAI_HAS_MCLKDIV_REGISTER) || \
+    (defined FSL_FEATURE_PCC_HAS_SAI_DIVIDER && FSL_FEATURE_PCC_HAS_SAI_DIVIDER)
+#define DEMO_AUDIO_MASTER_CLOCK OVER_SAMPLE_RATE *DEMO_AUDIO_SAMPLE_RATE
+#else
+#define DEMO_AUDIO_MASTER_CLOCK DEMO_SAI_CLK_FREQ
+#endif
+/* demo audio data channel */
+#define DEMO_AUDIO_DATA_CHANNEL (2U)
+/* demo audio bit width */
+#define DEMO_AUDIO_BIT_WIDTH kSAI_WordWidth16bits
+
+////////////////
+
+namespace {
+
+// Buffer configuration for receiving audio data
+constexpr int kNoOfSamples = 512;
+constexpr int kBufferSize = kNoOfSamples * 2;
+constexpr int kNoOfBuffers = 4;
+constexpr int kOverSampleRate = 384;
+
+// Buffer management
+AT_NONCACHEABLE_SECTION_ALIGN(
+    static int16_t g_rx_buffer[kNoOfBuffers * kNoOfSamples], 4);
+
+
+sai_edma_handle_t g_tx_sai_handle;
+sai_edma_handle_t g_rx_sai_handle;
+static volatile uint32_t g_tx_index = 0;
+static volatile uint32_t g_rx_index = 0;
+edma_handle_t g_tx_dma_handle = {0};
+edma_handle_t g_rx_dma_handle = {0};
+sai_transfer_t g_sai_transfer;
+
+
+
+
+bool g_is_audio_initialized = false;
+constexpr int kAudioCaptureBufferSize = kAudioSampleFrequency * 0.5;
+int16_t g_audio_capture_buffer[kAudioCaptureBufferSize];
+int16_t g_audio_output_buffer[kMaxAudioSampleSize];
+int32_t g_latest_audio_timestamp = 0;
+
+
+// WM8960 Settings
+wm8960_config_t wm8960Config = {
+	.route     = kWM8960_RoutePlaybackandRecord,
+    .bus              = kWM8960_BusI2S,
+    .format = {.mclk_HZ = 6144000U, .sampleRate = kWM8960_AudioSampleRate16KHz, .bitWidth = kWM8960_AudioBitWidth16bit},
+	.master_slave = false,
+	.rightInputSource = kWM8960_InputDifferentialMicInput2,
+    .playSource       = kWM8960_PlaySourceDAC,
+    .slaveAddress     = WM8960_I2C_ADDR,
+    .i2cConfig = {.codecI2CInstance = BOARD_CODEC_I2C_INSTANCE, .codecI2CSourceClock = BOARD_CODEC_I2C_CLOCK_FREQ},
+};
+codec_config_t boardCodecConfig = {.codecDevType = kCODEC_WM8960, .codecDevConfig = &wm8960Config};
+/*
+ * AUDIO PLL setting: Frequency = Fref * (DIV_SELECT + NUM / DENOM)
+ *                              = 24 * (32 + 77/100)
+ *                              = 786.48 MHz
+ */
+const clock_audio_pll_config_t audioPllConfig = {
+    .loopDivider = 32,  /* PLL loop divider. Valid range for DIV_SELECT divider value: 27~54. */
+    .postDivider = 1,   /* Divider after the PLL, should only be 1, 2, 4, 8, 16. */
+    .numerator   = 77,  /* 30 bit numerator of fractional loop divider. */
+    .denominator = 100, /* 30 bit denominator of fractional loop divider */
+};
+AT_NONCACHEABLE_SECTION_ALIGN(static uint8_t Buffer[BUFFER_NUMBER * BUFFER_SIZE], 4);
+AT_NONCACHEABLE_SECTION_INIT(sai_edma_handle_t txHandle);
+AT_NONCACHEABLE_SECTION_INIT(sai_edma_handle_t rxHandle);
+static uint32_t tx_index = 0U, rx_index = 0U;
+volatile uint32_t emptyBlock = BUFFER_NUMBER;
+edma_handle_t dmaTxHandle = {0}, dmaRxHandle = {0};
+extern codec_config_t boardCodecConfig;
+#if (defined(FSL_FEATURE_SAI_HAS_MCR) && (FSL_FEATURE_SAI_HAS_MCR)) || \
+    (defined(FSL_FEATURE_SAI_HAS_MCLKDIV_REGISTER) && (FSL_FEATURE_SAI_HAS_MCLKDIV_REGISTER))
+sai_master_clock_t mclkConfig = {
+#if defined(FSL_FEATURE_SAI_HAS_MCR) && (FSL_FEATURE_SAI_HAS_MCR)
+    .mclkOutputEnable = true,
+#if !(defined(FSL_FEATURE_SAI_HAS_NO_MCR_MICS) && (FSL_FEATURE_SAI_HAS_NO_MCR_MICS))
+    .mclkSource = kSAI_MclkSourceSysclk,
+#endif
+#endif
+};
+#endif
+codec_handle_t codecHandle;
+
+
+// Save audio samples into intermediate buffer
+void CaptureSamples(const int16_t *sample_data) {
+  const int sample_size = kNoOfSamples;
+  const int32_t time_in_ms =
+      g_latest_audio_timestamp + (sample_size / (kAudioSampleFrequency / 1000));
+
+  const int32_t start_sample_offset =
+      g_latest_audio_timestamp * (kAudioSampleFrequency / 1000);
+  for (int i = 0; i < sample_size; ++i) {
+    const int capture_index =
+        (start_sample_offset + i) % kAudioCaptureBufferSize;
+    g_audio_capture_buffer[capture_index] = sample_data[i];
+  }
+  // This is how we let the outside world know that new audio data has arrived.
+  g_latest_audio_timestamp = time_in_ms;
+}
+
+// Callback function for SAI RX EDMA transfer complete
+static void SaiRxCallback(I2S_Type *base, sai_edma_handle_t *handle,
+                          status_t status, void *userData) {
+  if (kStatus_SAI_RxError == status) {
+    // Handle the error
+  } else {
+    // Save audio data into intermediate buffer
+    CaptureSamples(
+        reinterpret_cast<int16_t *>(g_rx_buffer + g_tx_index * kNoOfSamples));
+
+    // Submit received audio buffer to SAI TX for audio loopback debug
+    g_sai_transfer.data = (uint8_t *)(g_rx_buffer + g_tx_index * kNoOfSamples);
+    g_sai_transfer.dataSize = kBufferSize;
+    if (kStatus_Success ==
+        SAI_TransferSendEDMA(I2S0, &g_tx_sai_handle, &g_sai_transfer)) {
+      g_tx_index++;
+    }
+    if (g_tx_index == kNoOfBuffers) {
+      g_tx_index = 0U;
+    }
+
+    // Submit buffer to SAI RX to receive audio data
+    g_sai_transfer.data = (uint8_t *)(g_rx_buffer + g_rx_index * kNoOfSamples);
+    g_sai_transfer.dataSize = kBufferSize;
+    if (kStatus_Success ==
+        SAI_TransferReceiveEDMA(I2S0, &g_rx_sai_handle, &g_sai_transfer)) {
+      g_rx_index++;
+    }
+    if (g_rx_index == kNoOfBuffers) {
+      g_rx_index = 0U;
+    }
+  }
+}
+
+// Callback function for TX Buffer transfer
+static void SaiTxCallback(I2S_Type *base, sai_edma_handle_t *handle,
+                          status_t status, void *userData) {
+  if (kStatus_SAI_TxError == status) {
+    // Handle the error
+  }
+  // Do nothing
+}
+
+// Initialize MCU pins
+void McuInitializePins(void) {
+  // Port B Clock Gate Control: Clock enabled
+  CLOCK_EnableClock(kCLOCK_PortB);
+  // Port C Clock Gate Control: Clock enabled
+  CLOCK_EnableClock(kCLOCK_PortC);
+  // Port E Clock Gate Control: Clock enabled
+  CLOCK_EnableClock(kCLOCK_PortE);
+
+  // PORTB16 (pin E10) is configured as UART0_RX
+  PORT_SetPinMux(PORTB, 16U, kPORT_MuxAlt3);
+  // PORTB17 (pin E9) is configured as UART0_TX
+  PORT_SetPinMux(PORTB, 17U, kPORT_MuxAlt3);
+  // PORTC1 (pin B11) is configured as I2S0_TXD0
+  PORT_SetPinMux(PORTC, 1U, kPORT_MuxAlt6);
+
+  // PORTC10 (pin C7) is configured as I2C1_SCL
+  const port_pin_config_t portc10_pinC7_config = {
+      kPORT_PullUp,          kPORT_FastSlewRate,     kPORT_PassiveFilterDisable,
+      kPORT_OpenDrainEnable, kPORT_LowDriveStrength, kPORT_MuxAlt2,
+      kPORT_UnlockRegister};
+  PORT_SetPinConfig(PORTC, 10U, &portc10_pinC7_config);
+
+  // PORTC11 (pin B7) is configured as I2C1_SDA
+  const port_pin_config_t portc11_pinB7_config = {
+      kPORT_PullUp,          kPORT_FastSlewRate,     kPORT_PassiveFilterDisable,
+      kPORT_OpenDrainEnable, kPORT_LowDriveStrength, kPORT_MuxAlt2,
+      kPORT_UnlockRegister};
+  PORT_SetPinConfig(PORTC, 11U, &portc11_pinB7_config);
+
+  // PORTC6 (pin C8) is configured as I2S0_MCLK
+  PORT_SetPinMux(PORTC, 6U, kPORT_MuxAlt6);
+  // PORTE11 (pin G4) is configured as I2S0_TX_FS
+  PORT_SetPinMux(PORTE, 11U, kPORT_MuxAlt4);
+  // PORTE12 (pin G3) is configured as I2S0_TX_BCLK
+  PORT_SetPinMux(PORTE, 12U, kPORT_MuxAlt4);
+  SIM->SOPT5 =
+      ((SIM->SOPT5 & (~(SIM_SOPT5_UART0TXSRC_MASK))) | SIM_SOPT5_UART0TXSRC(0));
+  // PORTE7 (pin F4) is configured as I2S0_RXD0
+  PORT_SetPinMux(PORTE, 7U, kPORT_MuxAlt4);
+  SIM->SOPT5 =
+      ((SIM->SOPT5 & (~(SIM_SOPT5_UART0TXSRC_MASK))) | SIM_SOPT5_UART0TXSRC(0));
+}
+
+// Write DA7212 registers using I2C
+status_t Da7212WriteRegister(uint8_t register_address, uint8_t register_data) {
+  uint8_t data[1];
+  data[0] = (uint8_t)register_data;
+  i2c_master_transfer_t i2c_data;
+  i2c_data.slaveAddress = da7212I2cAddress;
+  i2c_data.direction = kI2C_Write;
+  i2c_data.subaddress = register_address;
+  i2c_data.subaddressSize = 1;
+  i2c_data.data = (uint8_t * volatile) data;
+  i2c_data.dataSize = 1;
+  i2c_data.flags = kI2C_TransferDefaultFlag;
+  return I2C_MasterTransferBlocking(I2C1, &i2c_data);
+}
+
+// Initialize DA7212
+void Da7212Initialize(void) {
+  for (uint32_t i = 0; i < da7212ConfigurationSize; i++) {
+    Da7212WriteRegister(g_da7212_register_config[i][0],
+                        g_da7212_register_config[i][1]);
+  }
+}
+
+// Initalization for receiving audio data
+TfLiteStatus InitAudioRecording(tflite::ErrorReporter *error_reporter) {
+  edma_config_t dma_config = {0};
+  sai_config_t sai_config;
+  sai_transfer_format_t sai_format;
+  volatile uint32_t delay_cycle = 500000;
+  i2c_master_config_t i2c_config = {0};
+
+  // Initialize FRDM-K66F pins
+  McuInitializePins();
+
+  // Set Clock to 180 MHz
+  // BOARD_BootClockRUN();
+  BOARD_BootClockHSRUN();
+
+  // Enable Code Caching to improve performance
+  LMEM_EnableCodeCache(LMEM, true);
+
+  // Initialize I2C
+  I2C_MasterGetDefaultConfig(&i2c_config);
+  I2C_MasterInit(I2C1, &i2c_config, CLOCK_GetFreq(kCLOCK_BusClk));
+
+  // Initialize SAI
+  memset(&sai_format, 0U, sizeof(sai_transfer_format_t));
+  SAI_TxGetDefaultConfig(&sai_config);
+  SAI_TxInit(I2S0, &sai_config);
+  SAI_RxGetDefaultConfig(&sai_config);
+  SAI_RxInit(I2S0, &sai_config);
+  sai_format.bitWidth = kSAI_WordWidth16bits;
+  sai_format.channel = 0U;
+  sai_format.sampleRate_Hz = kSAI_SampleRate16KHz;
+  sai_format.masterClockHz = kOverSampleRate * sai_format.sampleRate_Hz;
+  sai_format.protocol = sai_config.protocol;
+  sai_format.stereo = kSAI_MonoRight;
+  sai_format.watermark = FSL_FEATURE_SAI_FIFO_COUNT / 2U;
+
+  // Initialize DA7212
+  Da7212Initialize();
+
+  // Initialize SAI EDMA
+  EDMA_GetDefaultConfig(&dma_config);
+  EDMA_Init(DMA0, &dma_config);
+  EDMA_CreateHandle(&g_tx_dma_handle, DMA0, 0);
+  EDMA_CreateHandle(&g_rx_dma_handle, DMA0, 1);
+
+  // Initialize DMA MUX
+  DMAMUX_Init(DMAMUX);
+  DMAMUX_SetSource(DMAMUX, 0, (uint8_t)kDmaRequestMux0I2S0Tx);
+  DMAMUX_EnableChannel(DMAMUX, 0);
+  DMAMUX_SetSource(DMAMUX, 1, (uint8_t)kDmaRequestMux0I2S0Rx);
+  DMAMUX_EnableChannel(DMAMUX, 1);
+
+  // Wait few cycles for DA7212
+  while (delay_cycle) {
+    __ASM("nop");
+    delay_cycle--;
+  }
+
+  // Setup SAI EDMA Callbacks
+  SAI_TransferTxCreateHandleEDMA(I2S0, &g_tx_sai_handle, SaiTxCallback, NULL,
+                                 &g_tx_dma_handle);
+  SAI_TransferRxCreateHandleEDMA(I2S0, &g_rx_sai_handle, SaiRxCallback, NULL,
+                                 &g_rx_dma_handle);
+  SAI_TransferTxSetFormatEDMA(I2S0, &g_tx_sai_handle, &sai_format,
+                              CLOCK_GetFreq(kCLOCK_CoreSysClk),
+                              sai_format.masterClockHz);
+  SAI_TransferRxSetFormatEDMA(I2S0, &g_rx_sai_handle, &sai_format,
+                              CLOCK_GetFreq(kCLOCK_CoreSysClk),
+                              sai_format.masterClockHz);
+
+  // Submit buffers to SAI RX to start receiving audio
+  g_sai_transfer.data = (uint8_t *)(g_rx_buffer + g_rx_index * kNoOfSamples);
+  g_sai_transfer.dataSize = kBufferSize;
+  if (kStatus_Success ==
+      SAI_TransferReceiveEDMA(I2S0, &g_rx_sai_handle, &g_sai_transfer)) {
+    g_rx_index++;
+  }
+  if (g_rx_index == kNoOfBuffers) {
+    g_rx_index = 0U;
+  }
+  g_sai_transfer.data = (uint8_t *)(g_rx_buffer + g_rx_index * kNoOfSamples);
+  g_sai_transfer.dataSize = kBufferSize;
+  if (kStatus_Success ==
+      SAI_TransferReceiveEDMA(I2S0, &g_rx_sai_handle, &g_sai_transfer)) {
+    g_rx_index++;
+  }
+  if (g_rx_index == kNoOfBuffers) {
+    g_rx_index = 0U;
+  }
+  return kTfLiteOk;
+}
+
+}  // namespace
+
+////////////////
+
+/*******************************************************************************
+ * Code
+ ******************************************************************************/
+void BOARD_EnableSaiMclkOutput(bool enable)
+{
+    if (enable)
+    {
+        IOMUXC_GPR->GPR1 |= IOMUXC_GPR_GPR1_SAI1_MCLK_DIR_MASK;
+    }
+    else
+    {
+        IOMUXC_GPR->GPR1 &= (~IOMUXC_GPR_GPR1_SAI1_MCLK_DIR_MASK);
+    }
+}
+
+static void rx_callback(I2S_Type *base, sai_edma_handle_t *handle, status_t status, void *userData)
+{
+    if (kStatus_SAI_RxError == status)
+    {
+        /* Handle the error. */
+    }
+    else
+    {
+        emptyBlock--;
+    }
+}
+
+static void tx_callback(I2S_Type *base, sai_edma_handle_t *handle, status_t status, void *userData)
+{
+    if (kStatus_SAI_TxError == status)
+    {
+        /* Handle the error. */
+    }
+    else
+    {
+        emptyBlock++;
+    }
+}
+
+TfLiteStatus GetAudioSamples(tflite::ErrorReporter* error_reporter,
+                             int start_ms, int duration_ms,
+                             int* audio_samples_size, int16_t** audio_samples) {
+    sai_transfer_t xfer;
+    edma_config_t dmaConfig = {0};
+    sai_transceiver_t config;
+
+    BOARD_ConfigMPU();
+    BOARD_InitBootPins();
+    BOARD_InitBootClocks();
+    BOARD_InitBootPeripherals();
+    CLOCK_InitAudioPll(&audioPllConfig);
+    BOARD_InitDebugConsole();
+
+
+    /*Clock setting for LPI2C*/
+    CLOCK_SetMux(kCLOCK_Lpi2cMux, DEMO_LPI2C_CLOCK_SOURCE_SELECT);
+    CLOCK_SetDiv(kCLOCK_Lpi2cDiv, DEMO_LPI2C_CLOCK_SOURCE_DIVIDER);
+
+    /*Clock setting for SAI1*/
+    CLOCK_SetMux(kCLOCK_Sai1Mux, DEMO_SAI1_CLOCK_SOURCE_SELECT);
+    CLOCK_SetDiv(kCLOCK_Sai1PreDiv, DEMO_SAI1_CLOCK_SOURCE_PRE_DIVIDER);
+    CLOCK_SetDiv(kCLOCK_Sai1Div, DEMO_SAI1_CLOCK_SOURCE_DIVIDER);
+
+    /*Enable MCLK clock*/
+    BOARD_EnableSaiMclkOutput(true);
+
+    PRINTF("SAI example started!\n\r");
+
+    /* Init DMA and create handle for DMA */
+    EDMA_GetDefaultConfig(&dmaConfig);
+    EDMA_Init(EXAMPLE_DMA, &dmaConfig);
+    EDMA_CreateHandle(&dmaTxHandle, EXAMPLE_DMA, EXAMPLE_TX_CHANNEL);
+    EDMA_CreateHandle(&dmaRxHandle, EXAMPLE_DMA, EXAMPLE_RX_CHANNEL);
+
+    /* Init DMAMUX */
+    DMAMUX_Init(EXAMPLE_DMAMUX);
+    DMAMUX_SetSource(EXAMPLE_DMAMUX, EXAMPLE_TX_CHANNEL, (uint8_t)EXAMPLE_SAI_TX_SOURCE);
+    DMAMUX_EnableChannel(EXAMPLE_DMAMUX, EXAMPLE_TX_CHANNEL);
+    DMAMUX_SetSource(EXAMPLE_DMAMUX, EXAMPLE_RX_CHANNEL, (uint8_t)EXAMPLE_SAI_RX_SOURCE);
+    DMAMUX_EnableChannel(EXAMPLE_DMAMUX, EXAMPLE_RX_CHANNEL);
+
+    /* SAI init */
+    SAI_Init(DEMO_SAI);
+
+    SAI_TransferTxCreateHandleEDMA(DEMO_SAI, &txHandle, tx_callback, NULL, &dmaTxHandle);
+    SAI_TransferRxCreateHandleEDMA(DEMO_SAI, &rxHandle, rx_callback, NULL, &dmaRxHandle);
+
+    /* I2S mode configurations */
+    SAI_GetClassicI2SConfig(&config, DEMO_AUDIO_BIT_WIDTH, kSAI_Stereo, kSAI_Channel0Mask);
+    SAI_TransferTxSetConfigEDMA(DEMO_SAI, &txHandle, &config);
+    config.syncMode = kSAI_ModeSync;
+    SAI_TransferRxSetConfigEDMA(DEMO_SAI, &rxHandle, &config);
+
+    /* set bit clock divider */
+    SAI_TxSetBitClockRate(DEMO_SAI, DEMO_AUDIO_MASTER_CLOCK, DEMO_AUDIO_SAMPLE_RATE, DEMO_AUDIO_BIT_WIDTH,
+                          DEMO_AUDIO_DATA_CHANNEL);
+    SAI_RxSetBitClockRate(DEMO_SAI, DEMO_AUDIO_MASTER_CLOCK, DEMO_AUDIO_SAMPLE_RATE, DEMO_AUDIO_BIT_WIDTH,
+                          DEMO_AUDIO_DATA_CHANNEL);
+
+/* master clock configurations */
+#if (defined(FSL_FEATURE_SAI_HAS_MCR) && (FSL_FEATURE_SAI_HAS_MCR)) || \
+    (defined(FSL_FEATURE_SAI_HAS_MCLKDIV_REGISTER) && (FSL_FEATURE_SAI_HAS_MCLKDIV_REGISTER))
+#if defined(FSL_FEATURE_SAI_HAS_MCLKDIV_REGISTER) && (FSL_FEATURE_SAI_HAS_MCLKDIV_REGISTER)
+    mclkConfig.mclkHz          = DEMO_AUDIO_MASTER_CLOCK;
+    mclkConfig.mclkSourceClkHz = DEMO_SAI_CLK_FREQ;
+#endif
+    SAI_SetMasterClockConfig(DEMO_SAI, &mclkConfig);
+#endif
+
+    /* Use default setting to init codec */
+    CODEC_Init(&codecHandle, &boardCodecConfig);
+
+    while (1)
+    {
+
+        if (emptyBlock > 0)
+        {
+            xfer.data     = Buffer + rx_index * BUFFER_SIZE;
+            xfer.dataSize = BUFFER_SIZE;
+            if (kStatus_Success == SAI_TransferReceiveEDMA(DEMO_SAI, &rxHandle, &xfer))
+            {
+                rx_index++;
+            }
+            if (rx_index == BUFFER_NUMBER)
+            {
+                rx_index = 0U;
+            }
+            PRINTF("R3: RX\n");
+        }
+        if (emptyBlock < BUFFER_NUMBER)
+        {
+            xfer.data     = Buffer + tx_index * BUFFER_SIZE;
+            xfer.dataSize = BUFFER_SIZE;
+            if (kStatus_Success == SAI_TransferSendEDMA(DEMO_SAI, &txHandle, &xfer))
+            {
+                tx_index++;
+            }
+            if (tx_index == BUFFER_NUMBER)
+            {
+                tx_index = 0U;
+            }
+            PRINTF("R3: TX\n");
+        }
+    }
+}
+
+int32_t LatestAudioTimestamp() {
+    return 0;
+}
+

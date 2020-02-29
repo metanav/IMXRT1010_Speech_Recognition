@@ -1,0 +1,3 @@
+feature_provider.cc:22:1:FeatureProvider::FeatureProvider(int, uint8_t*)	32	static
+feature_provider.cc:32:1:FeatureProvider::~FeatureProvider()	16	static
+feature_provider.cc:34:14:TfLiteStatus FeatureProvider::PopulateFeatureData(tflite::ErrorReporter*, int32_t, int32_t, int*)	112	static

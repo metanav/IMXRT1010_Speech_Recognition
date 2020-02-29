@@ -1,0 +1,12 @@
+kiss_fft.c:21:13:kf_bfly2	40	static
+kiss_fft.c:44:13:kf_bfly4	72	static
+kiss_fft.c:92:13:kf_bfly3	64	static
+kiss_fft.c:136:13:kf_bfly5	120	static
+kiss_fft.c:198:13:kf_bfly_generic	64	static
+kiss_fft.c:238:6:kf_work	48	static
+kiss_fft.c:309:6:kf_factor	40	static
+kiss_fft.c:339:14:kiss_fft_alloc	64	static
+kiss_fft.c:371:6:kiss_fft_stride	40	static
+kiss_fft.c:385:6:kiss_fft	24	static
+kiss_fft.c:391:6:kiss_fft_cleanup	4	static
+kiss_fft.c:396:5:kiss_fft_next_fast_size	24	static
