@@ -3,15 +3,7 @@
 
 #include "pin_mux.h"
 #include "fsl_lpi2c.h"
-#include "fsl_lpi2c_edma.h"
-#include "fsl_edma.h"
 #include "clock_config.h"
-
-
-#if defined(FSL_FEATURE_SOC_DMAMUX_COUNT) && FSL_FEATURE_SOC_DMAMUX_COUNT
-#include "fsl_dmamux.h"
-#endif
-
 
 #define EXAMPLE_LPI2C_MASTER_DMA_MUX (DMAMUX)
 #define EXAMPLE_LPI2C_MASTER_DMA (DMA0)
@@ -34,11 +26,6 @@
 #define LPI2C_MASTER_CLOCK_FREQUENCY LPI2C_CLOCK_FREQUENCY
 
 #define EXAMPLE_I2C_MASTER ((LPI2C_Type *)EXAMPLE_I2C_MASTER_BASE)
-
-#define EXAMPLE_LPI2C_MASTER_DMA (DMA0)
-
-#define LPI2C_TRANSMIT_DMA_CHANNEL 0U
-#define LPI2C_RECEIVE_DMA_CHANNEL 1U
 
 #define I2C_MASTER_SLAVE_ADDR_7BIT 0x7EU
 #define I2C_BAUDRATE 100000U

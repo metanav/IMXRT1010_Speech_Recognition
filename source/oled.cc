@@ -223,13 +223,13 @@ void OLED_Clear_Screen(void){
  * @data (String data)
  */
 
-void OLED_PrintText(uint8_t line,uint8_t xpos,const uint8_t *data){
+void OLED_PrintText(uint8_t line,uint8_t xpos, const uint8_t *data){
 
 	uint8_t i,j,k,len,cmax;
 
-	len = strlen((const char*)data);
+	len = strlen((const char*) data);
 
-	if( line<7){
+	if( line < 7){
 
 		if((xpos + len*13) > 127){
 
@@ -359,8 +359,6 @@ void OLED_DrawImage(uint8_t line, uint8_t xpos, const uint8_t *data){
 			}
 			I2C_Transfer(SSD1306_I2C_ADDRESS, txBuff,size + 1);
 		}
-
-
 
 	}
 }
