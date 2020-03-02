@@ -1,30 +1,20 @@
-/* Copyright 2019 The TensorFlow Authors. All Rights Reserved.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-==============================================================================*/
-
 #include "command_responder.h"
 #include "board.h"
+#include "oled.h"
 
 #define EXAMPLE_LED_GPIO BOARD_USER_LED_GPIO
 #define EXAMPLE_LED_GPIO_PIN BOARD_USER_LED_GPIO_PIN
 
-// The default implementation writes out the name of the recognized command
-// to the error console. Real applications will want to take some custom
-// action instead, and should implement their own versions of this function.
+bool g_oled_initialized = false;
+
 void RespondToCommand(tflite::ErrorReporter* error_reporter,
                       int32_t current_time, const char* found_command,
                       uint8_t score, bool is_new_command) {
+
+  if (!g_oled_initialized) {
+	  OLED_Init();
+	  g_oled_initialized = true;
+  }
 
   static int count = 0;
 
@@ -39,5 +29,8 @@ void RespondToCommand(tflite::ErrorReporter* error_reporter,
   if (is_new_command) {
     TF_LITE_REPORT_ERROR(error_reporter, "Heard %s (%d) @%dms", found_command,
                          score, current_time);
+
+    OLED_Clear_Screen();
+    OLED_PrintText(3, 24, (const uint8_t*) found_command);
   }
 }
