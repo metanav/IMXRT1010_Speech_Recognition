@@ -27,10 +27,15 @@ void RespondToCommand(tflite::ErrorReporter* error_reporter,
   }
 
   if (is_new_command) {
-    TF_LITE_REPORT_ERROR(error_reporter, "Heard %s (%d) @%dms", found_command,
-                         score, current_time);
+    TF_LITE_REPORT_ERROR(error_reporter, "Heard %s (%d) @%dms", found_command, score, current_time);
+
+    uint8_t text[8] = {32,32,32,32,32,32,32,0};
+
+    for (uint8_t i = 0; i < strlen(found_command); i++) {
+    	text[i] = found_command[i];
+    }
 
     OLED_Clear_Screen();
-    OLED_PrintText(3, 24, (uint8_t *) found_command);
+    OLED_PrintText(3, 24, text);
   }
 }

@@ -52,12 +52,8 @@
 #define SSD1306_VERTICAL_AND_RIGHT_HORIZONTAL_SCROLL	0x29
 #define SSD1306_VERTICAL_AND_LEFT_HORIZONTAL_SCROLL		0x2A
 
-
-extern const uint8_t logo_nxp[];
-
 void OLED_Init(void);
 void OLED_Clear_Screen(void);
 void OLED_PrintText(uint8_t line, uint8_t xpos, const uint8_t *data);
-void OLED_DrawImage(uint8_t line, uint8_t xpos, const uint8_t *logo);
 
 #endif /* OLED_H_ */
