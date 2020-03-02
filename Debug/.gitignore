@@ -1,1 +1,12 @@
 /lcd/
+/board/
+/codec/
+/component/
+/device/
+/drivers/
+/makefile
+/source/
+/sources.mk
+/startup/
+/utilities/
+/xip/

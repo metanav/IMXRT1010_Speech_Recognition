@@ -1,7 +1,0 @@
-fsl_clock.h:708:20:void CLOCK_SetMux(clock_mux_t, uint32_t)	24	static
-fsl_clock.h:745:20:void CLOCK_SetDiv(clock_div_t, uint32_t)	24	static
-fsl_dmamux.h:75:20:void DMAMUX_EnableChannel(DMAMUX_Type*, uint32_t)	16	static
-fsl_dmamux.h:105:20:void DMAMUX_SetSource(DMAMUX_Type*, uint32_t, uint32_t)	24	static
-i2c.cc:21:13:void lpi2c_master_callback(LPI2C_Type*, lpi2c_master_edma_handle_t*, status_t, void*)	24	static
-i2c.cc:31:6:void I2C_Init()	16	static
-i2c.cc:85:10:status_t I2C_Transfer(uint8_t, uint8_t*, uint8_t)	24	static

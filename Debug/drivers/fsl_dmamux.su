@@ -1,6 +1,0 @@
-fsl_clock.h:781:20:CLOCK_ControlGate	32	static
-fsl_clock.h:798:20:CLOCK_EnableClock	16	static
-fsl_clock.h:808:20:CLOCK_DisableClock	16	static
-fsl_dmamux.c:46:17:DMAMUX_GetInstance	24	static
-fsl_dmamux.c:72:6:DMAMUX_Init	16	static
-fsl_dmamux.c:86:6:DMAMUX_Deinit	16	static

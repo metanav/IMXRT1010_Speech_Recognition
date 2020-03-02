@@ -1,8 +1,0 @@
-fsl_clock.h:708:20:void CLOCK_SetMux(clock_mux_t, uint32_t)	24	static
-fsl_clock.h:745:20:void CLOCK_SetDiv(clock_div_t, uint32_t)	24	static
-fsl_dmamux.h:75:20:void DMAMUX_EnableChannel(DMAMUX_Type*, uint32_t)	16	static
-fsl_dmamux.h:105:20:void DMAMUX_SetSource(DMAMUX_Type*, uint32_t, uint32_t)	24	static
-IMXRT1010_Speech_Recognition.cpp:136:6:void BOARD_EnableSaiMclkOutput(bool)	16	static
-IMXRT1010_Speech_Recognition.cpp:148:13:void rx_callback(I2S_Type*, sai_edma_handle_t*, status_t, void*)	24	static
-IMXRT1010_Speech_Recognition.cpp:160:13:void tx_callback(I2S_Type*, sai_edma_handle_t*, status_t, void*)	24	static
-IMXRT1010_Speech_Recognition.cpp:175:5:int main()	56	static
