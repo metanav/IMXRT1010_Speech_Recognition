@@ -4,8 +4,6 @@
  * Variables
  ******************************************************************************/
 
-AT_NONCACHEABLE_SECTION(uint8_t g_master_txBuff[I2C_DATA_LENGTH]);
-AT_NONCACHEABLE_SECTION(uint8_t g_master_rxBuff[I2C_DATA_LENGTH]);
 AT_NONCACHEABLE_SECTION(lpi2c_master_handle_t g_m_handle);
 volatile bool g_MasterCompletionFlag = false;
 lpi2c_master_config_t masterConfig;

@@ -1,6 +1,6 @@
 #include "oled.h"
 
-uint8_t txBuff[130];
+AT_NONCACHEABLE_SECTION(uint8_t txBuff[130]);
 
 const uint8_t font12x16[][26] = {
 

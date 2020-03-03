@@ -5,11 +5,6 @@
 #include "fsl_lpi2c.h"
 #include "clock_config.h"
 
-#define EXAMPLE_LPI2C_MASTER_DMA_MUX (DMAMUX)
-#define EXAMPLE_LPI2C_MASTER_DMA (DMA0)
-#define LPI2CMASTER_TRANSMIT_EDMA_REQUEST_SOURCE kDmaRequestMuxLPI2C2
-#define LPI2CMASTER_RECEIVE_EDMA_REQUEST_SOURCE kDmaRequestMuxLPI2C2
-
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
