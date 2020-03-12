@@ -154,13 +154,17 @@ void loop() {
 
 
 int main(void) {
-	setup();
+    // initialize tensorflow model and interpreter
+    setup();
 
-	TfLiteStatus init_status = InitAudioRecording();
-	if (init_status == kTfLiteOk) {
-		error_reporter->Report("Audio Initialized");
-	}
+    // initialize audio
+    TfLiteStatus init_status = InitAudioRecording();
+	
+    if (init_status == kTfLiteOk) {
+	error_reporter->Report("Audio Initialized");
+    }
 
+    // inference loop
     while (1) {
        loop();
     }
