@@ -145,9 +145,7 @@ void loop() {
                          "RecognizeCommands::ProcessLatestResults() failed");
     return;
   }
-  // Do something based on the recognized command. The default implementation
-  // just prints to the error console, but you should replace this with your
-  // own function for a real application.
+  // prints result to OLED display
   RespondToCommand(error_reporter, current_time, found_command, score,
                    is_new_command);
 }
