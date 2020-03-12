@@ -29,7 +29,6 @@ uint8_t feature_buffer[kFeatureElementCount];
 uint8_t* model_input_buffer = nullptr;
 }  // namespace
 
-// The name of this function is important for Arduino compatibility.
 void setup() {
   // Set up logging. Google style is to avoid globals or statics because of
   // lifetime uncertainty, but since this has a trivial destructor it's okay.
@@ -102,7 +101,6 @@ void setup() {
   previous_time = 0;
 }
 
-// The name of this function is important for Arduino compatibility.
 void loop() {
   // Fetch the spectrogram for the current time.
   const int32_t current_time = LatestAudioTimestamp();
